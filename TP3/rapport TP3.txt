@@ -1,0 +1,183 @@
+Kadidiatou Coulibaly
+Drissa Cissé
+
+28/09/2018
+
+Introduction au Système: Planche TP n°3
+
+Exercice 1:
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Personne Personne;
+struct Personne {
+	char nom[40];
+	int age;
+};
+
+Personne saisie_personne_suivante() {
+	Personne personne;
+	printf("Saisir le nom :  ");
+	scanf("%s", personne.nom);
+
+	do {
+		printf("Saisir son age (entier positif) :  ");
+		scanf("%d", &personne.age);
+	} while (personne.age < 0);
+
+	return personne;
+}
+
+int calcul_max(int nbre_pers, Personne *liste_personnes) {
+	int ind_age_max, age_max = 0;
+
+	for (int i = 0; i < nbre_pers; ++i){
+		liste_personnes[i] = saisie_personne_suivante();
+		if (liste_personnes[i].age > age_max){
+			ind_age_max = i;
+		}
+	}
+
+	return ind_age_max;
+}
+
+int main(int argc, char const *argv[]){
+	Personne *liste_personnes;
+	int nbre_pers, ind_age_max;
+
+	if (argc == 2){
+		nbre_pers = atoi(argv[1]);
+		liste_personnes = (Personne*)malloc(sizeof(Personne)*nbre_pers);
+		ind_age_max = calcul_max(nbre_pers, liste_personnes);
+		printf("La personne la plus agee est: %s\n", liste_personnes[ind_age_max].nom);
+	} else {
+		printf("Nombre d\'arguments incorrect\n");
+		return -1;
+	}
+	
+	return 0;
+}
+
+
+Exercice 2:
+exo.c
+#include <stdio.h>
+#include <stdlib.h>
+#include "exo2_fcts.h"
+
+int main(void) {
+  float *tab, min;
+  int indicemin, nb;
+
+  printf("Combien d'elements voulez-mettre dans le tableau? ");
+  scanf("%d", &nb);
+
+  tab = (float*)malloc(nb*sizeof(float));
+
+  remplir(tab, nb);
+
+  min = calcul_min(tab, nb, &indicemin);
+  printf("Plus petit element = %f, a l'indice %d\n", min, indicemin);
+
+  return 0;
+ }
+########################################################################
+exo2_fcts.c
+#include <stdio.h>
+#include <stdlib.h>
+
+void remplir(float *tab, int nb) {
+  for (int i=0; i<nb; i++) {
+    printf("Saisir tab[%d] : ", i+1);
+    scanf("%f", &tab[i]);
+  }
+}
+
+float calcul_min(float *tab, int nb, int *p) {
+  float min = tab[0];
+  for(int i=0; i<nb; i++){
+    if (tab[i]<min) {
+       min = tab[i];
+       *p = i;
+    }
+  }
+  return min;
+}
+##########################################################################
+exo2_fcts.h
+#ifndef EXO2_FCTS_H
+#define EXO2_FCTS_H
+
+void remplir(float *tab, int nb);
+float calcul_min(float *tab, int nb, int *p);
+
+#endif
+##########################################################################
+
+Pour produire les fichiers .o nécessaires à la creation de l'executable il faut
+gcc -c exo2.c
+gcc -c exo2_fcts.c
+
+Pour recompiler le programme apres modification de exo2.c il faut lancer
+gcc -c exo2.c
+gcc exo2.o exo2_fcts.o
+
+Fichier Makefile créé
+
+all: TP3exo2
+
+exo2.o: exo2.c
+	gcc -c exo2.c
+
+exo2_fcts.o: exo2_fcts.c exo2_fcts.h
+	gcc -c exo2_fcts.c
+
+TP3exo2: exo2.o exo2_fcts.o
+	gcc exo2.o exo2_fcts.o -o TP3exo2
+
+
+Exercice 3:
+#include <stdio.h>
+#include <stdlib.h>
+
+char *convert_vers_bin(int x, int n) {
+	char *bin = (char*)malloc(sizeof(char)*n);
+
+	for (int i=0; i < n; i++) {
+		bin[i] = x%2;
+		x /= 2;
+	}
+
+	return bin;
+}
+
+/*char *convert_vers_dec(int v[], int n) {
+	char *conv;
+
+	for (int i = 0; i < strlen(v); ++i){
+		conv += V[i]-'0' ;
+	}
+}*/
+
+void affichage_bin(char *bin, int n) {
+	for (int i = n; i >= 0; --i)
+	{
+		printf("%d ", bin[i]);
+	}
+}
+
+int main(int argc, char const *argv[]) {
+	int dec, n;
+	char *bin;
+
+	printf("Saisir l'entier a convertir: ");
+	scanf("%d", &dec);
+	printf("Sur combien de bits convertir cet entier? \n");
+	scanf("%d", &n);
+
+
+	bin = convert_vers_bin(dec, n);
+	affichage_bin(bin, n);
+	
+	return 0;
+}
