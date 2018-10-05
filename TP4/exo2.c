@@ -12,7 +12,8 @@ int main(int argc, char const *argv[]) {
 		ps ax | grep bash | wc -l
 	*/
 
-	char *macommande[9] = { "ps", "ax", "|", "grep", "bash", "|", "wc", "-l", (char *)0 };
+	//char *macommande[3] = { "ps", "ax", " | grep bash | wc -l", (char *)0 };
+	char *macommande[2] = { "ax", (char *)0 };
 
 	switch (fork()){
 		case -1 :
@@ -20,7 +21,7 @@ int main(int argc, char const *argv[]) {
 			exit(-1);
 			break;
 		case 0 :
-			if (execvp(macommande[0], macommande)== -1) {
+			if (execvp("ps", macommande)== -1) {
 				perror("execvp");
 				exit(-1);
 			}

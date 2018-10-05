@@ -14,23 +14,46 @@ int main(int argc, char const *argv[]) {
 		en se deplaçant cette fois dans le repertoire de login du user 
 	*/
 
-	char *macommande[3] = { "(who; cd; ls; -al)", "../", (char *)0 };
+	char *mescommande[] = { "who", "cd", "ls", (char *)0 };
+	char *paramsWho[] = {"who", (char*)0};
+	char *paramsCd[] = {"cd", (char*)0};
+	char *paramsLs[] = {"ls", "-l", "/home/cash", (char*)0};
 
 	switch (fork()){
 		case -1 :
 			fprintf(stderr, "Erreur de fork\n");
 			exit(-1);
 			break;
-		case 0 :
-			if (execvp("ls", macommande)== -1) {
+		case 0 :// who
+			if (execvp(mescommande[0], paramsWho)== -1) {
 				perror("execvp");
 				exit(-1);
 			}
-			break;
-		default :
-			printf("Le fils %d est mort\n", wait(NULL));
-			return 0;
-	}
-
-	return 0;
+		default : // execution cd
+			switch (fork()){
+				case -1 :
+					fprintf(stderr, "Erreur de fork\n");
+					exit(-1);
+					break;
+				case 0 :
+					if (chdir("/home") == -1)
+						exit(-1);
+					break;
+				default : //ls -al
+					switch (fork()){
+						case -1 :
+							fprintf(stderr, "Erreur de fork\n");
+							exit(-1);
+							break;
+						case 0 :
+							if (execvp(mescommande[2], paramsLs)== -1) {
+								perror("execvp");
+								exit(-1);
+							}
+							break;
+						default :
+							while (wait(NULL) != -1);
+					}
+			}
+		}
 }
